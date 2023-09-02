@@ -194,6 +194,17 @@ def jar = tasks.named('jar', Jar) {
   }
 }
 
+tasks.register('uberJar', Jar) {
+  archiveClassifier = 'uber'
+  from sourceSets.main.output
+  dependsOn configurations.runtimeClasspath
+  from {
+    configurations.runtimeClasspath.findAll { it.name.endsWith('jar') }.collect { zipTree(it) }
+  }
+  duplicatesStrategy = DuplicatesStrategy.INCLUDE
+  exclude 'META-INF/*.RSA', 'META-INF/*.SF','META-INF/*.DSA'
+}
+
 // Populate bin folder with scripts
 def scripts = tasks.register('scripts', Copy) {
   // Take the properties into account for up-to-date checking
