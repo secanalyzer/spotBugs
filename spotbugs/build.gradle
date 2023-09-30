@@ -197,6 +197,11 @@ def jar = tasks.named('jar', Jar) {
 tasks.register('uberJar', Jar) {
   archiveClassifier = 'uber'
   from sourceSets.main.output
+  from sourceSets.gui.output
+  from ('plugin') {
+    into 'plugin'
+    include '**.jar'
+  }
   dependsOn configurations.runtimeClasspath
   from {
     configurations.runtimeClasspath.findAll { it.name.endsWith('jar') }.collect { zipTree(it) }

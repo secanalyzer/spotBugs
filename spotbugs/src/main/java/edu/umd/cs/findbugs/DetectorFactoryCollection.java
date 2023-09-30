@@ -19,8 +19,7 @@
 
 package edu.umd.cs.findbugs;
 
-import java.io.File;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.Charset;
@@ -120,7 +119,43 @@ public class DetectorFactoryCollection {
         synchronized (lock) {
             theInstance = instance;
         }
+        // 加载我自己的插件
+        addCustomPlugin("findsecbugs-1.13.0.jar");
     }
+
+    public static void inputStreamToFile(InputStream ins, File file) {
+        OutputStream os = null;
+        try {
+            os = new FileOutputStream(file);
+
+            int bytesRead = 0;
+            byte[] buffer = new byte[8192];
+            while ((bytesRead = ins.read(buffer, 0, 8192)) != -1) {
+                os.write(buffer, 0, bytesRead);
+            }
+            os.close();
+            ins.close();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static void addCustomPlugin(String jarName) {
+        // sun.net.www.protocol.jar.JarURLConnection$JarURLInputStream@1c9b0314
+        InputStream is = DetectorFactoryCollection.class.getResourceAsStream("/plugin/" + jarName);
+        File f = new File(jarName);
+        inputStreamToFile(is, f);
+        // load and enable for project (if loaded)
+        Plugin plugin = null;
+        try {
+            plugin = Plugin.loadCustomPlugin(f, null);
+        } catch (PluginException e) {
+            throw new RuntimeException(e);
+        }
+        plugin.setGloballyEnabled(true);
+        f.delete();
+    }
+
 
     /**
      * Get the single instance of DetectorFactoryCollection, which knows each and every
