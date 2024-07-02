@@ -210,6 +210,19 @@ tasks.register('uberJar', Jar) {
   exclude 'META-INF/*.RSA', 'META-INF/*.SF','META-INF/*.DSA'
 }
 
+publishing {
+  repositories {
+    maven {
+      name = "GitHubPackages"
+      url = "https://maven.pkg.github.com/secanalyzer/spotBugs"
+      credentials {
+        username = System.getenv("GITHUB_ACTOR")
+        password = System.getenv("GITHUB_TOKEN")
+      }
+    }
+  }
+}
+
 // Populate bin folder with scripts
 def scripts = tasks.register('scripts', Copy) {
   // Take the properties into account for up-to-date checking

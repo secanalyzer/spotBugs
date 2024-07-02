@@ -1,0 +1,35 @@
+name: build
+on:
+  pull_request:
+    branches:
+      - customized
+  push:
+    branches:
+      - customized
+
+permissions:
+  contents: read # to fetch code (actions/checkout)
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'
+          distribution: temurin
+          cache: gradle
+      - uses: gradle/wrapper-validation-action@v1
+      - name: Build
+        run: ./gradlew spotbugs:uberJar
+
+      - name: Publish to GitHub Packages
+        run: ./gradlew spotbugs:publish
+        env:
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
