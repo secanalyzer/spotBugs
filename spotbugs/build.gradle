@@ -210,19 +210,6 @@ tasks.register('uberJar', Jar) {
   exclude 'META-INF/*.RSA', 'META-INF/*.SF','META-INF/*.DSA'
 }
 
-publishing {
-  repositories {
-    maven {
-      name = "GitHubPackages"
-      url = "https://maven.pkg.github.com/secanalyzer/spotBugs"
-      credentials {
-        username = System.getenv("GITHUB_ACTOR")
-        password = System.getenv("GITHUB_TOKEN")
-      }
-    }
-  }
-}
-
 // Populate bin folder with scripts
 def scripts = tasks.register('scripts', Copy) {
   // Take the properties into account for up-to-date checking
@@ -364,14 +351,14 @@ def smokeTest = tasks.register('smokeTest') {
   }
 }
 
-publishing.publications.maven {
-  artifact distTar
-  artifact distZip
-  pom {
-    name = 'SpotBugs'
-    description = "SpotBugs: Because it's easy!"
-  }
-}
+//publishing.publications.maven {
+//  artifact distTar
+//  artifact distZip
+//  pom {
+//    name = 'SpotBugs'
+//    description = "SpotBugs: Because it's easy!"
+//  }
+//}
 
 // Module name should be reverse-DNS (com.github.spotbugs) just like package name
 // http://blog.joda.org/2017/04/java-se-9-jpms-module-naming.html
